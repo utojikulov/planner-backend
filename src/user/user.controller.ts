@@ -1,4 +1,5 @@
 import {
+	Body,
 	Controller,
 	Get,
 	HttpCode,
@@ -11,7 +12,7 @@ import { Auth } from 'src/auth/decorators/auth.decorator'
 import { CurrentUser } from 'src/auth/decorators/user.decorator'
 import { UserDto } from './user.dto'
 
-@Controller()
+@Controller('user/profile')
 export class UserController {
 	constructor(private readonly userService: UserService) {}
 
@@ -25,7 +26,7 @@ export class UserController {
 	@HttpCode(200)
 	@Put()
 	@Auth()
-	async updateProfile(@CurrentUser('id') id: string, dto: UserDto) {
+	async updateProfile(@CurrentUser('id') id: string, @Body() dto: UserDto) {
 		return this.userService.update(id, dto)
 	}
 }

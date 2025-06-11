@@ -62,7 +62,8 @@ export class UserService {
 			}
 		})
 
-		const { ...rest } = profile
+		// eslint-disable-next-line @typescript-eslint/no-unused-vars
+		const { password, ...rest } = profile
 
 		return {
 			user: rest,
