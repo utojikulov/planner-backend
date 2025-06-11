@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common'
+import { Injectable, NotFoundException } from '@nestjs/common'
 import { hash } from 'argon2'
 import { AuthDto } from 'src/auth/dto/auth.dto'
 import { PrismaService } from 'src/prisma.service'
@@ -31,6 +31,7 @@ export class UserService {
 
 	async getProfile(id: string) {
 		const profile = await this.getById(id)
+		if (!profile) throw new NotFoundException('User not found')
 
 		const totalTasks = profile.tasks.length
 		const completedTasks = await this.prisma.task.count({
