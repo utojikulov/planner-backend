@@ -1,4 +1,8 @@
-import { Injectable, NotFoundException } from '@nestjs/common'
+import {
+	BadRequestException,
+	Injectable,
+	NotFoundException
+} from '@nestjs/common'
 import { hash } from 'argon2'
 import { AuthDto } from 'src/auth/dto/auth.dto'
 import { PrismaService } from 'src/prisma.service'
@@ -90,6 +94,9 @@ export class UserService {
 
 	async update(id: string, dto: UserDto) {
 		let data = dto
+		if (!dto) {
+			throw new BadRequestException('No data provided for the update.')
+		}
 
 		if (dto.password) {
 			data = { ...dto, password: await hash(dto.password) }
@@ -99,7 +106,11 @@ export class UserService {
 			where: {
 				id
 			},
-			data
+			data,
+			select: {
+				email: true,
+				name: true
+			}
 		})
 	}
 }
