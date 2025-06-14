@@ -14,6 +14,7 @@ import { TimeBlockService } from './time-block.service'
 import { CurrentUser } from 'src/auth/decorators/user.decorator'
 import { Auth } from 'src/auth/decorators/auth.decorator'
 import { TimeBlockDto } from './dto/time-block.dto'
+import { UpdateOrderDto } from './dto/update-order.dto'
 
 @Controller('user/time-blocks')
 export class TimeBlockController {
@@ -35,14 +36,10 @@ export class TimeBlockController {
 
 	@UsePipes(new ValidationPipe())
 	@HttpCode(200)
-	@Put(':id')
+	@Put('update-order')
 	@Auth()
-	async update(
-		@Body() dto: TimeBlockDto,
-		@CurrentUser() userId: string,
-		@Param('id') id: string
-	) {
-		return this.timeBlockService.update(dto, userId, id)
+	updateOrder(@Body() updateOrderDto: UpdateOrderDto) {
+		return this.timeBlockService.updateOrder(updateOrderDto.ids)
 	}
 
 	@HttpCode(200)
