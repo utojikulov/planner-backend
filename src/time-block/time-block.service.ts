@@ -1,9 +1,9 @@
 import { Injectable } from '@nestjs/common'
 import { PrismaService } from 'src/prisma.service'
-import { TaskDto } from './task.dto'
+import { TimeBlockDto } from './dto/time-block.dto'
 
 @Injectable()
-export class TaskService {
+export class TimeBlockService {
 	constructor(private prisma: PrismaService) {}
 
 	async getAll(userId: string) {
@@ -14,7 +14,7 @@ export class TaskService {
 		})
 	}
 
-	async create(dto: TaskDto, userId: string) {
+	async create(dto: TimeBlockDto, userId: string) {
 		return this.prisma.task.create({
 			data: {
 				...dto,
@@ -27,10 +27,10 @@ export class TaskService {
 		})
 	}
 
-	async update(dto: Partial<TaskDto>, userId: string, taskId: string) {
+	async update(dto: Partial<TimeBlockDto>, userId: string, taskId: string) {
 		return this.prisma.task.update({
 			where: {
-				// userId,Q
+				// userId,
 				id: taskId
 			},
 			data: dto
