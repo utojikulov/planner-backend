@@ -84,4 +84,13 @@ export class PomodoroService {
 			data: dto
 		})
 	}
+
+	async deleteSession(sessionId: string, userId: string) {
+		return this.prisma.pomodoroSession.delete({
+			where: {
+				id: sessionId,
+				userId
+			}
+		})
+	}
 }

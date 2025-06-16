@@ -13,24 +13,31 @@ import {
 import { PomodoroService } from './timer.service'
 import { CurrentUser } from 'src/auth/decorators/user.decorator'
 import { Auth } from 'src/auth/decorators/auth.decorator'
-import { PomodoroDto } from './timer.dto'
+import { PomodoroRoundDto, PomodoroSessionDto } from './timer.dto'
 
 @Controller('user/timer')
 export class PomodoroController {
 	constructor(private readonly pomodoroService: PomodoroService) {}
 
-	@Get()
+	@Get('today')
 	@Auth()
-	async getAll(@CurrentUser('id') userId: string) {
-		return this.pomodoroService.getAll(userId)
+	async getTodaySession(@CurrentUser('id') userId: string) {
+		return this.pomodoroService.getTodaySession(userId)
+	}
+
+	@HttpCode(200)
+	@Post()
+	@Auth()
+	async create(@CurrentUser('id') userId: string) {
+		return this.pomodoroService.create(userId)
 	}
 
 	@UsePipes(new ValidationPipe())
 	@HttpCode(200)
-	@Post()
+	@Put('/round/:id')
 	@Auth()
-	async create(@Body() dto: PomodoroDto, @CurrentUser('id') userId: string) {
-		return this.pomodoroService.create(dto, userId)
+	async updateRound(@Body() dto: PomodoroRoundDto, @Param('id') id: string) {
+		return this.pomodoroService.updateRound(dto, id)
 	}
 
 	@UsePipes(new ValidationPipe())
@@ -38,8 +45,8 @@ export class PomodoroController {
 	@Put(':id')
 	@Auth()
 	async update(
-		@Body() dto: PomodoroDto,
-		@CurrentUser() userId: string,
+		@Body() dto: PomodoroSessionDto,
+		@CurrentUser('id') userId: string,
 		@Param('id') id: string
 	) {
 		return this.pomodoroService.update(dto, userId, id)
@@ -48,7 +55,10 @@ export class PomodoroController {
 	@HttpCode(200)
 	@Delete(':id')
 	@Auth()
-	async delete(@Param('id') id: string) {
-		return this.pomodoroService.delete(id)
+	async deleteSession(
+		@Param('id') id: string,
+		@CurrentUser('id') userId: string
+	) {
+		return this.pomodoroService.deleteSession(id, userId)
 	}
 }
