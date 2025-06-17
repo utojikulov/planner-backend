@@ -1,6 +1,7 @@
 import { Injectable, NotFoundException } from '@nestjs/common'
 import { PrismaService } from 'src/prisma.service'
 import { PomodoroRoundDto, PomodoroSessionDto } from './timer.dto'
+import { argv0 } from 'node:process'
 
 @Injectable()
 export class PomodoroService {
@@ -41,11 +42,13 @@ export class PomodoroService {
 
 		if (!user) throw new NotFoundException('User not found.')
 
+		const intervalsCount = user.intervalsCount ?? 0
+
 		return this.prisma.pomodoroSession.create({
 			data: {
 				rounds: {
 					createMany: {
-						data: Array.from({ length: user.intervalsCount }, () => ({
+						data: Array.from({ length: intervalsCount }, () => ({
 							totalSeconds: 0
 						}))
 					}
@@ -64,12 +67,19 @@ export class PomodoroService {
 
 	async update(
 		dto: Partial<PomodoroSessionDto>,
-		pomodoroId: string,
-		userId: string
+		userId: string,
+		pomodoroId: string
 	) {
+		const session = await this.prisma.pomodoroSession.findUnique({
+			where: { id: pomodoroId }
+		})
+
+		if (!session || session.userId !== userId) {
+			throw new NotFoundException('Pomodoro Session not found')
+		}
+
 		return this.prisma.pomodoroSession.update({
 			where: {
-				userId,
 				id: pomodoroId
 			},
 			data: dto
